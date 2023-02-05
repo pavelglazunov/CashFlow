@@ -8,7 +8,7 @@ from aiogram.dispatcher.filters import Text
 
 from kb import *
 from session import create_session, join_session, check_user_active_game, get_session_players, exit_from_session, \
-    remove_session
+    remove_session, get_session_by_admin
 from functions import validate_token
 from forms import StartGame, JoinGame, RemoveGame
 
@@ -81,7 +81,6 @@ async def remove_game(message: types.Message, state: FSMContext):
 
         for i in session_users:
             await bot.send_message(i, "Игра была удалена, вы были перенаправлены в главное меню", reply_markup=kb_start)
-        # await message.answer(status, reply_markup=kb_start)
     return
 
 
@@ -114,8 +113,9 @@ async def all_message(message: types.Message):
         await message.answer("Введите токен игры для подтверждения или 0 для отмены")
         await RemoveGame.token.set()
     if message.text == "Начать игру":
-        pass
-
+        if session := get_session_by_admin(message.from_user.id):
+            for i in session[1]:
+                await bot.send_message(i, "Начало игры, укажите вашу профессию", reply_markup=kb_game)
 
 if __name__ == '__main__':
     executor.start_polling(dp, skip_updates=True)

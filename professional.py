@@ -359,6 +359,31 @@ SECRETARY = {
     }
 }
 
+PROFESSIONALS_LIST_RU = ["Полицейский",
+                         "Медсестра",
+                         "Уборщик",
+                         "Механик",
+                         "Инженер",
+                         "Учитель",
+                         "Менеджер",
+                         "Пилот авиалиний",
+                         "Секретарь",
+                         "Юрист",
+                         "Водитель грузовика",
+                         "Врач"]
+PROFESSIONALS_LIST_EN = [POLICE,
+                         NURSE,
+                         CLEANER,
+                         MECHANIC,
+                         ENGINEER,
+                         TEACHER,
+                         MANAGER,
+                         PILOT,
+                         DOCTOR,
+                         DRIVER,
+                         LAWYER,
+                         SECRETARY]
+
 
 def active_state(prof):
     result = 0

@@ -63,23 +63,25 @@ def join_session(token, user_id):
             return "Вы уже принимаете участие в другой игре"
 
     if token in all_sessions:
-        all_sessions[token]["metadata"]["game_player_count"] += 1
-        all_sessions[token]["users"][str(user_id)] = {
-            "profession": None,
-            "expenses": None,  # без детей м крилитов
-            "children_expenses": None,
-            "saving": None,
+        if all_sessions[token]["metadata"]["game_player_count"] <= 5:
+            all_sessions[token]["metadata"]["game_player_count"] += 1
+            all_sessions[token]["users"][str(user_id)] = {
+                "profession": None,
+                "expenses": None,  # без детей м крилитов
+                "children_expenses": None,
+                "saving": None,
 
-            "salary": None,
-            "real_estate": {},
-            "children_count": 0,
-            "stocks": {},
-            "credits": {},
+                "salary": None,
+                "real_estate": {},
+                "children_count": 0,
+                "stocks": {},
+                "credits": {},
 
-        }
+            }
 
-        dump_json(all_sessions)
-        return ""
+            dump_json(all_sessions)
+            return ""
+        return "В данной игре нет мест"
     return "Некоректный токен, пожалуйста проверьте его"
 
 
@@ -110,3 +112,12 @@ def remove_session(token, user_id):
 
     return ["Вы не являетесь админом игры или игры с таким токеном несуществует, "
             "повторите попытку или введите 0 для отмены", []]
+
+
+def get_session_by_admin(user_id):
+    all_sessions = load_json()
+
+    for i in all_sessions:
+        if all_sessions[i]["metadata"]["admin"] == user_id:
+            return [i, all_sessions[i]["users"].keys()]
+    return False
