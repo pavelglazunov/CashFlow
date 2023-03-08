@@ -1,5 +1,8 @@
 POLICE = {
     "name": "police",
+    "balance": 0,
+    "balance_message_id": 0,
+    "active_message_id": 0,
     "income": {
         "salary": 3000,
         "passive_income": {}  # format | id: [name, price]
@@ -30,6 +33,9 @@ POLICE = {
 }
 NURSE = {
     "name": "nurse",
+    "balance": 0,
+    "balance_message_id": 0,
+    "active_message_id": 0,
     "income": {
         "salary": 3100,
         "passive_income": {}  # format | id: [name, price]
@@ -60,6 +66,9 @@ NURSE = {
 }
 CLEANER = {
     "name": "cleaner",
+    "balance": 0,
+    "balance_message_id": 0,
+    "active_message_id": 0,
     "income": {
         "salary": 1600,
         "passive_income": {}  # format | id: [name, price]
@@ -90,6 +99,9 @@ CLEANER = {
 }
 MECHANIC = {
     "name": "mechanic",
+    "balance": 0,
+    "balance_message_id": 0,
+    "active_message_id": 0,
     "income": {
         "salary": 2000,
         "passive_income": {}  # format | id: [name, price]
@@ -120,6 +132,9 @@ MECHANIC = {
 }
 ENGINEER = {
     "name": "engineer",
+    "balance": 0,
+    "balance_message_id": 0,
+    "active_message_id": 0,
     "income": {
         "salary": 4900,
         "passive_income": {}  # format | id: [name, price]
@@ -150,6 +165,9 @@ ENGINEER = {
 }
 TEACHER = {
     "name": "teacher",
+    "balance": 0,
+    "balance_message_id": 0,
+    "active_message_id": 0,
     "income": {
         "salary": 3300,
         "passive_income": {}  # format | id: [name, price]
@@ -180,6 +198,9 @@ TEACHER = {
 }
 MANAGER = {
     "name": "manager",
+    "balance": 0,
+    "balance_message_id": 0,
+    "active_message_id": 0,
     "income": {
         "salary": 4600,
         "passive_income": {}  # format | id: [name, price]
@@ -210,6 +231,9 @@ MANAGER = {
 }
 PILOT = {
     "name": "pilot",
+    "balance": 0,
+    "balance_message_id": 0,
+    "active_message_id": 0,
     "income": {
         "salary": 9500,
         "passive_income": {}  # format | id: [name, price]
@@ -240,6 +264,9 @@ PILOT = {
 }
 DOCTOR = {
     "name": "doctor",
+    "balance": 0,
+    "balance_message_id": 0,
+    "active_message_id": 0,
     "income": {
         "salary": 13_200,
         "passive_income": {}  # format | id: [name, price]
@@ -270,6 +297,9 @@ DOCTOR = {
 }
 DRIVER = {
     "name": "driver",
+    "balance": 0,
+    "balance_message_id": 0,
+    "active_message_id": 0,
     "income": {
         "salary": 2500,
         "passive_income": {}  # format | id: [name, price]
@@ -300,6 +330,9 @@ DRIVER = {
 }
 LAWYER = {
     "name": "lawyer",
+    "balance": 0,
+    "balance_message_id": 0,
+    "active_message_id": 0,
     "income": {
         "salary": 7500,
         "passive_income": {}  # format | id: [name, price]
@@ -330,6 +363,9 @@ LAWYER = {
 }
 SECRETARY = {
     "name": "secretary",
+    "balance": 0,
+    "balance_message_id": 0,
+    "active_message_id": 0,
     "income": {
         "salary": 2500,
         "passive_income": {}  # format | id: [name, price]
@@ -367,10 +403,11 @@ PROFESSIONALS_LIST_RU = ["Полицейский",
                          "Учитель",
                          "Менеджер",
                          "Пилот авиалиний",
-                         "Секретарь",
-                         "Юрист",
+                         "Врач",
                          "Водитель грузовика",
-                         "Врач"]
+                         "Юрист",
+                         "Секретарь"
+                         ]
 PROFESSIONALS_LIST_EN = [POLICE,
                          NURSE,
                          CLEANER,

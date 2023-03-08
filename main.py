@@ -1,18 +1,18 @@
 from aiogram import Bot, types
-from aiogram.utils import executor
-from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-from aiogram.dispatcher import Dispatcher, FSMContext
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
+from aiogram.dispatcher import Dispatcher, FSMContext
+from aiogram.utils import executor
 from aiogram.dispatcher.filters import Text
 
+from forms import StartGame, JoinGame, RemoveGame, Professionals
+from functions import validate_token
 from kb import *
 from session import create_session, join_session, check_user_active_game, get_session_players, exit_from_session, \
-    remove_session, get_session_by_admin
-from functions import validate_token
-from forms import StartGame, JoinGame, RemoveGame
+    remove_session, get_session_by_admin, get_user_data, load_json, dump_json
+from game_processing import *
+from professional import PROFESSIONALS_LIST_EN, PROFESSIONALS_LIST_RU
 
-TOKEN = "6083708114:AAFAUp-Pads5YI-jS8FOgG4U4oJzkonBUlE"
+from bt import TOKEN
 
 storage = MemoryStorage()
 
@@ -22,7 +22,7 @@ dp = Dispatcher(bot, storage=storage)
 
 @dp.message_handler(commands=["start"])
 async def start(message: types.Message):
-    await message.answer("Добро пожаловать в CashFlow bot, укадите необходимое действие", reply_markup=kb_start)
+    await message.answer("Добро пожаловать в CashFlow bot, укажите необходимое действие", reply_markup=kb_start)
 
 
 @dp.message_handler(state=StartGame.start)
@@ -41,7 +41,7 @@ async def create_game(message: types.Message, state: FSMContext):
             return
         await message.answer(session_answer)
         return
-    await message.answer("Некоректный токен, введите другой")
+    await message.answer("Некорректный токен, введите другой")
     return
 
 
@@ -84,6 +84,51 @@ async def remove_game(message: types.Message, state: FSMContext):
     return
 
 
+@dp.callback_query_handler(Text(startswith="prof="))
+async def set_user_professional(callback: types.CallbackQuery):
+    data = load_json()
+
+    session = callback.data.split(";")[1]
+    user_id = callback.data.split(";")[2]
+
+    data[session]["users"][user_id] = PROFESSIONALS_LIST_EN[
+        PROFESSIONALS_LIST_RU.index(callback.data.split(";")[0].split("=")[1])]
+
+    dump_json(data)
+
+    await bot.delete_message(callback.message.chat.id, callback.message.message_id)
+
+    msg = await bot.send_message(callback.message.chat.id, "Текущий баланс: ")
+
+    balance = set_balance(callback.data.split(";")[1], callback.from_user.id, msg["message_id"])
+
+    await bot.edit_message_text(f"Текущий баланс: {balance}", callback.message.chat.id, msg["message_id"])
+    # await bot.pin_chat_message(callback.message.chat.id, msg["message_id"], disable_notification=False)
+
+    kb_game_menu = InlineKeyboardMarkup(row_width=3)
+    kb_game_menu.insert(InlineKeyboardButton("✴️ день выплат ✴️", callback_data=f"#pd;{user_id}"))
+    kb_game_menu.row(InlineKeyboardButton("🆘 всякая всячина 🆘", callback_data=f"#vv;{user_id}"))
+    kb_game_menu.insert(InlineKeyboardButton("✅ сделка ✅", callback_data=f"#dl;{user_id}"))
+    kb_game_menu.insert(InlineKeyboardButton("🌐 рынок 🌐", callback_data=f"#mk;{user_id}"))
+    kb_game_menu.insert(InlineKeyboardButton("🚺 благотворительность 🚺", callback_data=f"#ct;{user_id}"))
+    kb_game_menu.insert(InlineKeyboardButton("🚹 ребенок 🚹", callback_data=f"#cl;{user_id}"))
+    kb_game_menu.insert(InlineKeyboardButton("🛂 увольнение 🛂", callback_data=f"#dm;{user_id}"))
+
+    card = generate_user_card(session, user_id)
+    main_message = await bot.send_message(callback.message.chat.id, card,
+                                          reply_markup=kb_game_menu)
+    main_message_id = main_message["message_id"]
+
+    set_main_message(session, user_id, main_message_id)
+
+    # print(callback.data)
+    # print(user_id, session_name, user_id)
+    # print(user_professional)
+
+    # user = get_user_data("amogus", user_id)
+    pass
+
+
 @dp.message_handler()
 async def all_message(message: types.Message):
     if message.text == "Присоединиться к игре":
@@ -114,8 +159,26 @@ async def all_message(message: types.Message):
         await RemoveGame.token.set()
     if message.text == "Начать игру":
         if session := get_session_by_admin(message.from_user.id):
-            for i in session[1]:
-                await bot.send_message(i, "Начало игры, укажите вашу профессию", reply_markup=kb_game)
+            # print(session)
+            if session["metadata"]["game_player_count"] < 2:
+                await message.answer("Недостаточное количество игроков")
+                return
+
+            start_game()
+
+            for i in session["users"]:
+                print(session)
+                kb_professional = InlineKeyboardMarkup(resize_keyboard=True)
+
+                print(i)
+                for k in PROFESSIONALS_LIST_RU:
+                    print(k)
+                    kb_professional.add(
+                        InlineKeyboardButton(k, callback_data=f"prof={k};{session['metadata']['session_name']};{i}")
+                    )
+                await bot.send_message(i, "Начало игры, укажите вашу профессию", reply_markup=kb_professional)
+                await Professionals.prof.set()
+
 
 if __name__ == '__main__':
     executor.start_polling(dp, skip_updates=True)

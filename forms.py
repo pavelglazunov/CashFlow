@@ -11,3 +11,7 @@ class JoinGame(StatesGroup):
 
 class RemoveGame(StatesGroup):
     token = State()
+
+
+class Professionals(StatesGroup):
+    prof = State()

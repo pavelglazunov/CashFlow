@@ -32,7 +32,7 @@ def create_session(user_id, user_token):
             return "Вы уже принимаете участие в другой игре"
 
     if not (user_token in all_sessions):
-        all_sessions[user_token] = {"metadata": {"game_status": 0, "game_player_count": 1, "admin": user_id},
+        all_sessions[user_token] = {"metadata": {"session_name": user_token, "game_status": 0, "game_player_count": 1, "admin": user_id},
                                     "users": {
                                         str(user_id): {
                                             "profession": None,
@@ -119,5 +119,10 @@ def get_session_by_admin(user_id):
 
     for i in all_sessions:
         if all_sessions[i]["metadata"]["admin"] == user_id:
-            return [i, all_sessions[i]["users"].keys()]
+            return all_sessions[i]
     return False
+
+
+def get_user_data(session, user_id):
+    all_sessions = load_json()
+    return all_sessions[session]["users"][user_id]
