@@ -10,6 +10,18 @@ def _dump(data):
     pass
 
 
+def get_month_cash_flow(session, user_id):
+    data = load_json()
+    user = data[session]["users"][str(user_id)]
+    passive_income = sum([v for v in user["income"]["passive_income"].values()])
+    expenses = sum([user["expenses"][i] for i in
+                    ["texes", "mortgage_house", "study", "car", "credit_card", "another", "bank_credit_pay_price"]])
+    expenses += user["expenses"]["child_price"] * user["expenses"]["child_count"]
+    month_cash_flow = user["income"]["salary"] + passive_income - expenses
+
+    return month_cash_flow
+
+
 def set_main_message(session, user_id, message_id):
     data = load_json()
     user = data[session]["users"][str(user_id)]
@@ -21,7 +33,7 @@ def set_main_message(session, user_id, message_id):
 def set_balance(session, user_id, message_id):
     data = load_json()
     user = data[session]["users"][str(user_id)]
-    user["balance"] = user["income"]["salary"] + user["assets"]["saving"]
+    user["balance"] = get_month_cash_flow(session, user_id) + user["assets"]["saving"]
     user["balance_message_id"] = message_id
     dump_json(data)
 
@@ -40,7 +52,7 @@ def edit_balance(session, user_id, price):
 
 def generate_user_card(session, user_id):
     data = load_json()
-    user = data[session]["users"][user_id]
+    user = data[session]["users"][str(user_id)]
     card = ""
     card += "недвижимость: \n"
     user_active: dict = user["income"]["passive_income"]
@@ -69,61 +81,20 @@ def generate_user_card(session, user_id):
     return card
 
 
-def start_game():
-    pass
+def get_credit(session, user_id, price):
+    data = load_json()
+    user = data[session]["users"][str(user_id)]
+    user["liabilities"]["bank_credit"] += price
+    user["expenses"]["bank_credit_pay_price"] = user["liabilities"]["bank_credit"] * 0.1
+    user["balance"] += price
+
+    dump_json(data)
 
 
-def generate_professionals():
-    pass
+def add_child(session, user_id):
+    data = load_json()
 
+    user = data[session]["users"][str(user_id)]
+    user["expenses"]["child_count"] += 1
 
-def pay_day():
-    pass
-
-
-def add_gold_coin():
-    pass
-
-
-def sell_gold_coin():
-    pass
-
-
-def all_sorts_of_things():
-    pass
-
-
-def child():
-    pass
-
-
-def change_professional():
-    pass
-
-
-def actual_statistic():
-    ...
-
-
-def get_credit():
-    pass
-
-
-def pay_credit():
-    pass
-
-
-def bye_house():
-    pass
-
-
-def sell_house():
-    pass
-
-
-def bye_stock():
-    pass
-
-
-def sell_stock():
-    pass
+    dump_json(data)

@@ -125,4 +125,4 @@ def get_session_by_admin(user_id):
 
 def get_user_data(session, user_id):
     all_sessions = load_json()
-    return all_sessions[session]["users"][user_id]
+    return all_sessions[session]["users"][str(user_id)]

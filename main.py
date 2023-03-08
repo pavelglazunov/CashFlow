@@ -1,10 +1,12 @@
+import random
+
 from aiogram import Bot, types
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher import Dispatcher, FSMContext
 from aiogram.utils import executor
 from aiogram.dispatcher.filters import Text
 
-from forms import StartGame, JoinGame, RemoveGame, Professionals
+from forms import StartGame, JoinGame, RemoveGame, Professionals, UserAnswer, DealData
 from functions import validate_token
 from kb import *
 from session import create_session, join_session, check_user_active_game, get_session_players, exit_from_session, \
@@ -84,6 +86,34 @@ async def remove_game(message: types.Message, state: FSMContext):
     return
 
 
+@dp.message_handler(state=UserAnswer.vv_answer)
+async def get_answer(message: types.Message, state: FSMContext):
+    price = message.text
+    user = get_user_data(UserAnswer.__session_name__, message.from_user.id)
+    session = UserAnswer.__session_name__
+
+    child_kb = InlineKeyboardMarkup(resize=True)
+    child_kb.insert(InlineKeyboardButton("С условием на детей", callback_data=f"@ch=T;{session};{price}"))
+    child_kb.insert(InlineKeyboardButton("Без условия на детей", callback_data=f"@ch=F;{session};{price}"))
+
+    await bot.edit_message_text(f"Сумма вычета: {price}", message.chat.id, user["active_message_id"],
+                                reply_markup=child_kb)
+    await bot.delete_message(message.chat.id, message.message_id)
+    await state.finish()
+
+
+small_deal = {}
+
+
+@dp.message_handler(state=DealData.answer1)
+async def get_answer1(message: types.Message, state: FSMContext):
+    if message.text == "мелкая сделка":
+        small_deal["type"] = "small"
+        await bot.edit_message_text("Уажите необходимую сделку", message.chat.id, DealData.__message__,
+                                    reply_markup=kb_deal_l2)
+        await DealData.next()
+
+
 @dp.callback_query_handler(Text(startswith="prof="))
 async def set_user_professional(callback: types.CallbackQuery):
     data = load_json()
@@ -106,13 +136,13 @@ async def set_user_professional(callback: types.CallbackQuery):
     # await bot.pin_chat_message(callback.message.chat.id, msg["message_id"], disable_notification=False)
 
     kb_game_menu = InlineKeyboardMarkup(row_width=3)
-    kb_game_menu.insert(InlineKeyboardButton("✴️ день выплат ✴️", callback_data=f"#pd;{user_id}"))
-    kb_game_menu.row(InlineKeyboardButton("🆘 всякая всячина 🆘", callback_data=f"#vv;{user_id}"))
-    kb_game_menu.insert(InlineKeyboardButton("✅ сделка ✅", callback_data=f"#dl;{user_id}"))
-    kb_game_menu.insert(InlineKeyboardButton("🌐 рынок 🌐", callback_data=f"#mk;{user_id}"))
-    kb_game_menu.insert(InlineKeyboardButton("🚺 благотворительность 🚺", callback_data=f"#ct;{user_id}"))
-    kb_game_menu.insert(InlineKeyboardButton("🚹 ребенок 🚹", callback_data=f"#cl;{user_id}"))
-    kb_game_menu.insert(InlineKeyboardButton("🛂 увольнение 🛂", callback_data=f"#dm;{user_id}"))
+    kb_game_menu.insert(InlineKeyboardButton("✴️ день выплат ✴️", callback_data=f"#pd;{session}"))
+    kb_game_menu.row(InlineKeyboardButton("🆘 всякая всячина 🆘", callback_data=f"#vv;{session}"))
+    kb_game_menu.insert(InlineKeyboardButton("✅ сделка ✅", callback_data=f"#dl;{session}"))
+    kb_game_menu.insert(InlineKeyboardButton("🌐 рынок 🌐", callback_data=f"#mk;{session}"))
+    kb_game_menu.insert(InlineKeyboardButton("🚺 благотворительность 🚺", callback_data=f"#ct;{session}"))
+    kb_game_menu.insert(InlineKeyboardButton("🚹 ребенок 🚹", callback_data=f"#cl;{session}"))
+    kb_game_menu.insert(InlineKeyboardButton("🛂 увольнение 🛂", callback_data=f"#dm;{session}"))
 
     card = generate_user_card(session, user_id)
     main_message = await bot.send_message(callback.message.chat.id, card,
@@ -127,6 +157,77 @@ async def set_user_professional(callback: types.CallbackQuery):
 
     # user = get_user_data("amogus", user_id)
     pass
+
+
+@dp.callback_query_handler(Text(startswith="#"))
+async def game_processing_handler(callback: types.CallbackQuery):
+    """ #pd - день выплат
+        #vv - всякая всячина
+        #dl - сделка
+        #mk - рынок
+        #ct - благотворительность
+        #cl - ребенок
+        #dm - увольнение
+"""
+    type_, session = callback.data.split(";")
+    user_id = callback.from_user.id
+    user = get_user_data(session, user_id)
+
+    if type_ == "#pd":
+        balance = edit_balance(session, user_id, get_month_cash_flow(session, user_id))
+        if user["have_bonus"]:
+            balance += 500 if random.randint(1, 6) > 3 else 0
+        await bot.edit_message_text(f"Текущий баланс: {balance}", callback.message.chat.id, user["balance_message_id"])
+    if type_ == "#vv":
+        await bot.edit_message_text("Введите сумму вычета: ", callback.message.chat.id, user["active_message_id"])
+        UserAnswer.__session_name__ = session
+        await UserAnswer.vv_answer.set()
+    if type_ == "#ct":
+        balance = edit_balance(session, user_id, -get_month_cash_flow(session, user_id) * 0.1)
+        await bot.edit_message_text(f"Текущий баланс: {balance}", callback.message.chat.id, user["balance_message_id"])
+    if type_ == "#cl":
+        user_children = user["expenses"]["child_count"]
+        if user_children < 3:
+            add_child(session, user_id)
+            card = generate_user_card(session, user_id)
+            await bot.edit_message_text(card, callback.message.chat.id, user["active_message_id"],
+                                        reply_markup=kb_game_menu(session))
+    if type_ == "#dm":
+        ex: dict = user["expenses"]
+        minus = ex["texes"] + ex["mortgage_house"] + ex["study"] + ex["car"] + ex["credit_card"] + ex["another"] + ex[
+            "bank_credit_pay_price"] + ex["child_price"] * ex["child_count"]
+
+        balance = edit_balance(session, user_id, -minus)
+        await bot.edit_message_text(f"Текущий баланс: {balance}", callback.message.chat.id, user["balance_message_id"])
+
+    if type_ == "#dl":
+        await bot.edit_message_text("Уажите тип сделки", callback.message.chat.id, user["active_message_id"],
+                                    reply_markup=kb_deal)
+        DealData.__session_name__ = session
+        DealData.__user_id__ = user_id
+        DealData.__message__ = user["active_message_id"]
+        await DealData.answer1.set()
+
+
+@dp.callback_query_handler(Text(startswith="@"))
+async def param_handler(callback: types.CallbackQuery):
+    type_, session, get_data = callback.data.split(";")
+    user_id = callback.from_user.id
+    user = get_user_data(session, user_id)
+
+    if (type_ == "@ch=T" and not user["expenses"]["child_count"]) or (type_ == "@ch=F"):
+        price = int(get_data)
+        if price >= 1800 and user["balance"] < price:
+            delta = price - user["balance"]
+            credit_price = [i for i in range(delta, delta + 1001) if i % 1000 == 0][0]
+            get_credit(session, user_id, credit_price)
+        balance = edit_balance(session, user_id, -price)
+
+    await bot.edit_message_text(f"Текущий баланс: {balance}", callback.message.chat.id, user["balance_message_id"])
+    card = generate_user_card(session, user_id)
+
+    await bot.edit_message_text(card, callback.message.chat.id, user["active_message_id"],
+                                reply_markup=kb_game_menu(session))
 
 
 @dp.message_handler()
@@ -164,15 +265,12 @@ async def all_message(message: types.Message):
                 await message.answer("Недостаточное количество игроков")
                 return
 
-            start_game()
-
             for i in session["users"]:
                 print(session)
                 kb_professional = InlineKeyboardMarkup(resize_keyboard=True)
 
                 print(i)
                 for k in PROFESSIONALS_LIST_RU:
-                    print(k)
                     kb_professional.add(
                         InlineKeyboardButton(k, callback_data=f"prof={k};{session['metadata']['session_name']};{i}")
                     )

@@ -3,6 +3,7 @@ POLICE = {
     "balance": 0,
     "balance_message_id": 0,
     "active_message_id": 0,
+    "have_bonus": False,
     "income": {
         "salary": 3000,
         "passive_income": {}  # format | id: [name, price]
@@ -28,7 +29,8 @@ POLICE = {
         "mortgage_house_full_price": 46_000,
         "study_full_price": 0,
         "car_full_price": 5000,
-        "credit_cards_full_price": 3000
+        "credit_cards_full_price": 3000,
+        "bank_credit": 0
     }
 }
 NURSE = {
@@ -36,6 +38,7 @@ NURSE = {
     "balance": 0,
     "balance_message_id": 0,
     "active_message_id": 0,
+    "have_bonus": False,
     "income": {
         "salary": 3100,
         "passive_income": {}  # format | id: [name, price]
@@ -61,7 +64,8 @@ NURSE = {
         "mortgage_house_full_price": 47_000,
         "study_full_price": 6000,
         "car_full_price": 5000,
-        "credit_cards_full_price": 4000
+        "credit_cards_full_price": 4000,
+        "bank_credit": 0
     }
 }
 CLEANER = {
@@ -69,6 +73,7 @@ CLEANER = {
     "balance": 0,
     "balance_message_id": 0,
     "active_message_id": 0,
+    "have_bonus": False,
     "income": {
         "salary": 1600,
         "passive_income": {}  # format | id: [name, price]
@@ -94,7 +99,8 @@ CLEANER = {
         "mortgage_house_full_price": 20_000,
         "study_full_price": 0,
         "car_full_price": 4000,
-        "credit_cards_full_price": 3000
+        "credit_cards_full_price": 3000,
+        "bank_credit": 0
     }
 }
 MECHANIC = {
@@ -102,6 +108,7 @@ MECHANIC = {
     "balance": 0,
     "balance_message_id": 0,
     "active_message_id": 0,
+    "have_bonus": False,
     "income": {
         "salary": 2000,
         "passive_income": {}  # format | id: [name, price]
@@ -127,7 +134,8 @@ MECHANIC = {
         "mortgage_house_full_price": 31_000,
         "study_full_price": 0,
         "car_full_price": 3000,
-        "credit_cards_full_price": 3000
+        "credit_cards_full_price": 3000,
+        "bank_credit": 0
     }
 }
 ENGINEER = {
@@ -135,6 +143,7 @@ ENGINEER = {
     "balance": 0,
     "balance_message_id": 0,
     "active_message_id": 0,
+    "have_bonus": False,
     "income": {
         "salary": 4900,
         "passive_income": {}  # format | id: [name, price]
@@ -160,7 +169,8 @@ ENGINEER = {
         "mortgage_house_full_price": 75_000,
         "study_full_price": 12_000,
         "car_full_price": 7000,
-        "credit_cards_full_price": 5000
+        "credit_cards_full_price": 5000,
+        "bank_credit": 0
     }
 }
 TEACHER = {
@@ -168,6 +178,7 @@ TEACHER = {
     "balance": 0,
     "balance_message_id": 0,
     "active_message_id": 0,
+    "have_bonus": False,
     "income": {
         "salary": 3300,
         "passive_income": {}  # format | id: [name, price]
@@ -193,7 +204,8 @@ TEACHER = {
         "mortgage_house_full_price": 50_000,
         "study_full_price": 12_000,
         "car_full_price": 5000,
-        "credit_cards_full_price": 4000
+        "credit_cards_full_price": 4000,
+        "bank_credit": 0
     }
 }
 MANAGER = {
@@ -201,6 +213,7 @@ MANAGER = {
     "balance": 0,
     "balance_message_id": 0,
     "active_message_id": 0,
+    "have_bonus": False,
     "income": {
         "salary": 4600,
         "passive_income": {}  # format | id: [name, price]
@@ -226,7 +239,8 @@ MANAGER = {
         "mortgage_house_full_price": 75_000,
         "study_full_price": 12_000,
         "car_full_price": 6000,
-        "credit_cards_full_price": 4000
+        "credit_cards_full_price": 4000,
+        "bank_credit": 0
     }
 }
 PILOT = {
@@ -234,6 +248,7 @@ PILOT = {
     "balance": 0,
     "balance_message_id": 0,
     "active_message_id": 0,
+    "have_bonus": False,
     "income": {
         "salary": 9500,
         "passive_income": {}  # format | id: [name, price]
@@ -259,7 +274,8 @@ PILOT = {
         "mortgage_house_full_price": 90_000,
         "study_full_price": 0,
         "car_full_price": 15_000,
-        "credit_cards_full_price": 22_000
+        "credit_cards_full_price": 22_000,
+        "bank_credit": 0
     }
 }
 DOCTOR = {
@@ -267,6 +283,7 @@ DOCTOR = {
     "balance": 0,
     "balance_message_id": 0,
     "active_message_id": 0,
+    "have_bonus": False,
     "income": {
         "salary": 13_200,
         "passive_income": {}  # format | id: [name, price]
@@ -292,7 +309,8 @@ DOCTOR = {
         "mortgage_house_full_price": 202_000,
         "study_full_price": 150_000,
         "car_full_price": 190000,
-        "credit_cards_full_price": 10000
+        "credit_cards_full_price": 10000,
+        "bank_credit": 0
     }
 }
 DRIVER = {
@@ -300,6 +318,7 @@ DRIVER = {
     "balance": 0,
     "balance_message_id": 0,
     "active_message_id": 0,
+    "have_bonus": False,
     "income": {
         "salary": 2500,
         "passive_income": {}  # format | id: [name, price]
@@ -325,7 +344,8 @@ DRIVER = {
         "mortgage_house_full_price": 38000,
         "study_full_price": 0,
         "car_full_price": 4000,
-        "credit_cards_full_price": 3000
+        "credit_cards_full_price": 3000,
+        "bank_credit": 0
     }
 }
 LAWYER = {
@@ -333,6 +353,7 @@ LAWYER = {
     "balance": 0,
     "balance_message_id": 0,
     "active_message_id": 0,
+    "have_bonus": False,
     "income": {
         "salary": 7500,
         "passive_income": {}  # format | id: [name, price]
@@ -358,7 +379,8 @@ LAWYER = {
         "mortgage_house_full_price": 115000,
         "study_full_price": 78000,
         "car_full_price": 11000,
-        "credit_cards_full_price": 7000
+        "credit_cards_full_price": 7000,
+        "bank_credit": 0
     }
 }
 SECRETARY = {
@@ -366,6 +388,7 @@ SECRETARY = {
     "balance": 0,
     "balance_message_id": 0,
     "active_message_id": 0,
+    "have_bonus": False,
     "income": {
         "salary": 2500,
         "passive_income": {}  # format | id: [name, price]
@@ -391,7 +414,8 @@ SECRETARY = {
         "mortgage_house_full_price": 38000,
         "study_full_price": 0,
         "car_full_price": 4000,
-        "credit_cards_full_price": 3000
+        "credit_cards_full_price": 3000,
+        "bank_credit": 0
     }
 }
 
